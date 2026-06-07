@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres:16
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: bhavya
+      POSTGRES_DB: AI_document_assistant
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      DATABASE_URL: postgresql://postgres:bhavya@db:5432/AI_document_assistant
+      SECRET_KEY: bhavya_secret_key_123
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      GEMINI_API_KEY: YOUR_KEY_HERE
+      UPLOAD_DIR: uploads
+      AI_MODEL: gemini-3.1-flash-lite
+
+    depends_on:
+      - db
+
+    volumes:
+      - ./uploads:/app/uploads
+
+volumes:
+  postgres_data:
